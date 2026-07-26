@@ -3,29 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Subsonic Wind Tunnel — Build Log</title>
+<title>Subsonic Wind Tunnel: Build Log</title>
 
-<!--
-  ============================================================
-  HOW TO USE THIS FILE
-  ============================================================
-  1. Put this file in your repo root, named exactly:  index.html
-  2. Make a folder next to it named:  images
-  3. Drop your pictures into images/ using these names (any that
-     exist will appear automatically; missing ones show a labeled
-     placeholder, so nothing breaks):
-        images/render-full.png      -> hero / full-assembly render
-        images/render-contraction.png
-        images/render-settling.png
-        images/render-smokerake.png
-        images/honeycomb.jpg        -> your printed honeycomb photo
-        images/flowviz.gif          -> smoke visualization (add later)
-  4. Search for the word  EDIT  below to find every spot meant
-     for you to change (specs, links, your name).
-  ============================================================
--->
-
-<!-- Fonts: a technical display face + clean body + a mono for instrument-style data -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -41,9 +20,10 @@
     --heat:     #E8A33D;   /* instrument amber — used sparingly */
     --text:     #DFE8EC;
     --muted:    #8DA1AC;
-    --good:     #57C98A;   /* status: built */
-    --warn:     #E8A33D;   /* status: modeled */
-    --idle:     #6C7F8A;   /* status: not started */
+    --green:    #57C98A;   /* status: finished */
+    --yellow    #D6D054;   /* status: printed */
+    --orange    #E8A33D;   /* status: modeled */
+    --gray:     #6C7F8A;   /* status: not started */
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -229,9 +209,10 @@
     border-radius: 2px;
     white-space: nowrap;
   }
-  .status.built    { color: var(--good); border: 1px solid var(--good); }
-  .status.modeled  { color: var(--warn); border: 1px solid var(--warn); }
-  .status.pending  { color: var(--idle); border: 1px solid var(--idle); }
+  .status.finished   { color: var(--green); border: 1px solid var(--green); }
+  .status.printed    { color: var(--yellow); border: 1px solid var(--yellow); }
+  .status.modeled    { color: var(--orange); border: 1px solid var(--orange); }
+  .status.pending    { color: var(--gray); border: 1px solid var(--gray); }
 
   /* ============ COMPONENT GRID ============ */
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -307,15 +288,12 @@
   </style>
 
   <div class="wrap hero-content">
-    <span class="eyebrow">Open-Circuit · Subsonic · Smoke Visualization</span>
-    <!-- EDIT: your project title -->
-    <h1>Building a <span class="accent">subsonic<br>wind tunnel</span> from scratch</h1>
-    <!-- EDIT: one-line description -->
-    <p class="lede">A personal open-circuit wind tunnel with a smoke rake for flow visualization — designed, modeled, and fabricated component by component. This is a live build log.</p>
+    <span class="eyebrow">Open-Circuit Suction · Subsonic Speeds · Smoke Visualization</span>
+    <h1>Designing & constructing a <span class="accent">subsonic<br>wind tunnel</span> from scratch</h1>
+    <p class="lede">A personal project open-circuit suction wind tunnel with a smoke rake for flow visualization. Each component is designed & modeled in SOLIDWORKS, and is constructed with a 3D printer. This is a live build log that will continue to be updated as the build progresses.</p>
     <div class="cta-row">
-      <!-- EDIT: point these at your repo + jump to the log -->
       <a class="btn primary" href="#log">View the build log</a>
-      <a class="btn" href="https://github.com/YOUR-USERNAME/YOUR-REPO" target="_blank" rel="noopener">Source on GitHub</a>
+      <a class="btn" href="https://github.com/aidan27vt/Wind_Tunnel" target="_blank" rel="noopener">Source on GitHub</a>
     </div>
   </div>
 </header>
@@ -325,13 +303,12 @@
   <div class="wrap">
     <span class="eyebrow">Design Targets</span>
     <h2 class="section-title">Specifications</h2>
-    <p class="section-sub">Key parameters driving the design. Replace the placeholders as you lock in numbers.</p>
-    <!-- EDIT each value below -->
+    <p class="section-sub">Key parameters driving the design.</p>
     <div class="specs">
-      <div class="spec"><div class="val">—<span class="unit"> m/s</span></div><div class="key">Target Airspeed</div></div>
-      <div class="spec"><div class="val">—<span class="unit"> : 1</span></div><div class="key">Contraction Ratio</div></div>
-      <div class="spec"><div class="val">—<span class="unit"> mm</span></div><div class="key">Test Section</div></div>
-      <div class="spec"><div class="val">—<span class="unit"> mm</span></div><div class="key">Honeycomb Cell</div></div>
+      <div class="spec"><div class="val">5<span class="unit"> m/s</span></div><div class="key">Target Airspeed</div></div>
+      <div class="spec"><div class="val">9<span class="unit"> : 1</span></div><div class="key">Contraction Ratio</div></div>
+      <div class="spec"><div class="val">300<span class="unit"> mm</span></div><div class="key">Inlet Size</div></div>
+      <div class="spec"><div class="val">100<span class="unit"> mm</span></div><div class="key">Test Section Size</div></div>
     </div>
   </div>
 </section>
@@ -347,23 +324,17 @@
       <div class="frame">
         <!-- SLIDE 1 -->
         <div class="slide active">
-          <div class="ph">missing image<span class="fname">images/render-full.png</span></div>
-          <img src="images/render-full.png" alt="Full wind tunnel assembly render" onerror="this.style.display='none'">
-          <div class="cap"><b>Full assembly</b> — complete tunnel, inlet to diffuser</div>
+          <div class="ph">missing image<span class="fname">images/render-contraction.png</span></div>
+          <img src="images/render-contraction.png" alt="Contraction chamber render" onerror="this.style.display='none'">
+          <div class="cap"><b>Contraction chamber</b> : accelerates and smooths the flow</div>
         </div>
         <!-- SLIDE 2 -->
         <div class="slide">
-          <div class="ph">missing image<span class="fname">images/render-contraction.png</span></div>
-          <img src="images/render-contraction.png" alt="Contraction chamber render" onerror="this.style.display='none'">
-          <div class="cap"><b>Contraction chamber</b> — accelerates and smooths the flow</div>
-        </div>
-        <!-- SLIDE 3 -->
-        <div class="slide">
           <div class="ph">missing image<span class="fname">images/render-settling.png</span></div>
           <img src="images/render-settling.png" alt="Settling chamber render" onerror="this.style.display='none'">
-          <div class="cap"><b>Settling chamber</b> — houses the honeycomb flow straightener</div>
+          <div class="cap"><b>Settling chamber</b> : houses the honeycomb flow straightener & screens</div>
         </div>
-        <!-- SLIDE 4 -->
+        <!-- SLIDE 3 -->
         <div class="slide">
           <div class="ph">missing image<span class="fname">images/render-smokerake.png</span></div>
           <img src="images/render-smokerake.png" alt="Smoke rake render" onerror="this.style.display='none'">
@@ -383,23 +354,22 @@
   <div class="wrap">
     <span class="eyebrow">Status</span>
     <h2 class="section-title">Build progress</h2>
-    <p class="section-sub">Where each subsystem stands right now. Update the status labels as you go.</p>
-    <!-- EDIT statuses: class can be  built / modeled / pending -->
+    <p class="section-sub">Where each subsystem stands right now.</p>
     <div class="matrix">
       <div class="row">
-        <div class="name">Honeycomb flow straightener<small>Printed and glued</small></div>
-        <span class="status built">Built</span>
+        <div class="name">Honeycomb flow straightener<small>Glued, sanded, & painted</small></div>
+        <span class="status finished">Finished</span>
       </div>
       <div class="row">
-        <div class="name">Contraction chamber<small>Fully modeled, not yet fabricated</small></div>
+        <div class="name">Contraction chamber<small>Printed</small></div>
+        <span class="status printed">Printed</span>
+      </div>
+      <div class="row">
+        <div class="name">Settling chamber<small>Fully modeled</small></div>
         <span class="status modeled">Modeled</span>
       </div>
       <div class="row">
-        <div class="name">Settling chamber<small>Fully modeled, not yet fabricated</small></div>
-        <span class="status modeled">Modeled</span>
-      </div>
-      <div class="row">
-        <div class="name">Smoke rake<small>Fully modeled, not yet fabricated</small></div>
+        <div class="name">Smoke rake<small>Fully modeled</small></div>
         <span class="status modeled">Modeled</span>
       </div>
       <div class="row">
@@ -432,8 +402,7 @@
         </div>
         <div class="body">
           <h3>Honeycomb straightener</h3>
-          <!-- EDIT: a couple sentences on the honeycomb -->
-          <p>3D-printed in sections and glued into the settling chamber. Straightens incoming flow and knocks down large-scale swirl before the contraction.</p>
+          <p>3D-printed in sections and glued together. Straightens incoming flow and knocks down large-scale swirl before the contraction.</p>
         </div>
       </div>
       <div class="card">
@@ -443,7 +412,6 @@
         </div>
         <div class="body">
           <h3>Contraction chamber</h3>
-          <!-- EDIT -->
           <p>The contraction ratio sets how much the flow accelerates and how uniform the test-section velocity profile ends up. Profile chosen to avoid separation along the walls.</p>
         </div>
       </div>
@@ -456,7 +424,7 @@
   <div class="wrap">
     <span class="eyebrow">Coming Soon</span>
     <h2 class="section-title">Flow visualization</h2>
-    <p class="section-sub">Once the tunnel runs, a looping smoke-line clip drops in here. Save it as <code>images/flowviz.gif</code> and it appears automatically.</p>
+    <p class="section-sub">Upon completion test videos will be shown here. Stay tuned...</p>
     <div class="frame">
       <div class="ph">awaiting first run<span class="fname">images/flowviz.gif</span></div>
       <img src="images/flowviz.gif" alt="Smoke flow visualization" style="object-fit:cover" onerror="this.style.display='none'">
@@ -467,11 +435,10 @@
 <!-- ===================== FOOTER ===================== -->
 <footer>
   <div class="wrap">
-    <!-- EDIT: your name + links -->
-    <p><strong>Wind Tunnel Build Log</strong> — by Aidan Sonntag</p>
+    <p><strong>Wind Tunnel Build Log</strong>: by Aidan Sonntag</p>
     <p style="margin-top:6px;">
       <a href="https://github.com/aidan27vt/Wind_Tunnel">GitHub repo</a> ·
-      <a href="mailto:aidan27@vt.edu">Email</a>
+      <a href="#" onclick="event.preventDefault(); navigator.clipboard.writeText('aidan27@vt.edu'); this.textContent='Copied to clipboard!'; setTimeout(()=>this.textContent='aidan27@vt.edu', 1500);">aidan27@vt.edu</a>
     </p>
     <p style="margin-top:16px; font-size:0.8rem; color:var(--idle);">Active build — last updated <span id="today"></span></p>
   </div>
