@@ -146,18 +146,18 @@
     <div class="carousel" id="carousel">
       <div class="frame">
         <div class="slide active">
-          <div class="ph">Coming soon...<span class="fname">/images/render-contraction.png</span></div>
-          <img src="/images/render-contraction.png" alt="Contraction chamber render" onerror="this.style.display='none'">
+          <div class="ph">Coming soon...<span class="fname">images/render-contraction.png</span></div>
+          <img src="images/render-contraction.png" alt="Contraction chamber render" onerror="this.style.display='none'">
           <div class="cap"><b>Contraction chamber</b> — accelerates and smooths the flow</div>
         </div>
         <div class="slide">
-          <div class="ph">Coming soon...<span class="fname">/images/render-settling.png</span></div>
-          <img src="/images/render-settling.png" alt="Settling chamber render" onerror="this.style.display='none'">
+          <div class="ph">Coming soon...<span class="fname">images/render-settling.png</span></div>
+          <img src="images/render-settling.png" alt="Settling chamber render" onerror="this.style.display='none'">
           <div class="cap"><b>Settling chamber</b> — houses the honeycomb straightener &amp; screens</div>
         </div>
         <div class="slide">
-          <div class="ph">Coming soon...<span class="fname">/images/render-smokerake.png</span></div>
-          <img src="/images/render-smokerake.png" alt="Smoke rake render" onerror="this.style.display='none'">
+          <div class="ph">Coming soon...<span class="fname">images/render-smokerake.png</span></div>
+          <img src="images/render-smokerake.png" alt="Smoke rake render" onerror="this.style.display='none'">
           <div class="cap"><b>Smoke rake</b> — injects parallel smoke lines for visualization</div>
         </div>
         <button class="arrow prev" onclick="move(-1)" aria-label="Previous render">‹</button>
@@ -195,8 +195,8 @@
     <div class="grid2">
       <div class="card">
         <div class="media">
-          <div class="ph">Coming soon...<span class="fname">/images/honeycomb.jpg</span></div>
-          <img src="/images/honeycomb.jpg" alt="Printed honeycomb" onerror="this.style.display='none'">
+          <div class="ph">Coming soon...<span class="fname">images/honeycomb.jpg</span></div>
+          <img src="images/honeycomb.jpg" alt="Printed honeycomb" onerror="this.style.display='none'">
         </div>
         <div class="body">
           <h3>Honeycomb straightener</h3>
@@ -205,8 +205,8 @@
       </div>
       <div class="card">
         <div class="media">
-          <div class="ph">Coming soon...<span class="fname">/images/render-contraction.png</span></div>
-          <img src="/images/render-contraction.png" alt="Contraction chamber" onerror="this.style.display='none'">
+          <div class="ph">Coming soon...<span class="fname">images/render-contraction.png</span></div>
+          <img src="images/render-contraction.png" alt="Contraction chamber" onerror="this.style.display='none'">
         </div>
         <div class="body">
           <h3>Contraction chamber</h3>
@@ -252,6 +252,16 @@
   });
   document.getElementById('today').textContent =
     new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long' });
+</script>
+<script>
+  document.querySelectorAll('img').forEach(img => {
+    const hide = () => {
+      const ph = img.parentElement.querySelector('.ph');
+      if (ph) ph.style.display = 'none';
+    };
+    if (img.complete && img.naturalWidth > 0) hide();
+    else img.addEventListener('load', hide);
+  });
 </script>
 </body>
 </html>
