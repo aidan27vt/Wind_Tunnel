@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Build Progress — Subsonic Wind Tunnel</title>
+
+<!--
+  ============================================================
+  BUILD PROGRESS PAGE — build.html
+  ============================================================
+  Put in repo root with the other pages.
+  Images used here (in images/ folder):
+     render-full.png, render-contraction.png,
+     render-settling.png, render-smokerake.png, honeycomb.jpg
+  Search for  EDIT  for spots to change.
+  Status badge classes:  finished / printed / modeled / pending
+  ============================================================
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --ink:#0F161B; --panel:#172128; --panel-2:#1D2A32; --line:#2A3B45;
+    --flow:#4FD1E0; --flow-dim:#2C8592; --heat:#E8A33D;
+    --text:#DFE8EC; --muted:#8DA1AC; --gray:#6C7F8A;
+    --green:#57C98A; --yellow:#D6D054; --orange:#E8A33D;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--ink); color:var(--text); font-family:'Inter',system-ui,sans-serif; line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+  .wrap { max-width:1040px; margin:0 auto; padding:0 24px; }
+
+  /* NAV */
+  nav { position:sticky; top:0; z-index:50; background:rgba(15,22,27,0.85); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); }
+  nav .nav-in { max-width:1040px; margin:0 auto; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; }
+  nav .brand { font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:0.95rem; color:var(--text); text-decoration:none; }
+  nav .brand .dot { color:var(--flow); }
+  nav .links { display:flex; gap:20px; }
+  nav .links a { font-family:'JetBrains Mono',monospace; font-size:0.78rem; letter-spacing:0.03em; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+  nav .links a:hover, nav .links a.active { color:var(--flow); }
+
+  .eyebrow { font-family:'JetBrains Mono',monospace; font-size:0.72rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--flow); }
+  h1,h2,h3 { font-family:'Space Grotesk',sans-serif; font-weight:600; line-height:1.12; }
+
+  .page-head { padding:64px 0 8px; }
+  .page-head h1 { font-size:clamp(2rem,5vw,3rem); letter-spacing:-0.02em; margin:14px 0 12px; }
+  .page-head p { color:var(--muted); max-width:600px; font-size:1.05rem; }
+
+  section { padding:64px 0; border-top:1px solid var(--line); margin-top:56px; }
+  section:first-of-type { border-top:none; margin-top:40px; }
+  h2.section-title { font-size:clamp(1.6rem,3.2vw,2.1rem); margin:10px 0 8px; }
+  p.section-sub { color:var(--muted); max-width:620px; margin-bottom:36px; }
+
+  /* SPECS */
+  .specs { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:3px; overflow:hidden; }
+  .spec { background:var(--panel); padding:22px 20px; }
+  .spec .val { font-family:'JetBrains Mono',monospace; font-size:1.5rem; color:var(--flow); }
+  .spec .val .unit { font-size:0.9rem; color:var(--muted); }
+  .spec .key { font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin-top:6px; }
+
+  /* CAROUSEL */
+  .carousel { position:relative; }
+  .frame { position:relative; aspect-ratio:16/9; background:var(--panel); border:1px solid var(--line); border-radius:4px; overflow:hidden; }
+  .slide { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.45s ease; pointer-events:none; }
+  .slide.active { opacity:1; pointer-events:auto; }
+  .slide img { width:100%; height:100%; object-fit:contain; }
+  .ph { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:0.8rem; text-align:center; padding:10px; background:repeating-linear-gradient(-45deg,transparent 0 10px,rgba(79,209,224,0.04) 10px 20px),var(--panel); }
+  .ph .fname { color:var(--flow-dim); }
+  .slide .cap { position:absolute; left:0; right:0; bottom:0; padding:14px 18px; background:linear-gradient(transparent,rgba(15,22,27,0.92)); font-size:0.9rem; }
+  .slide .cap b { font-family:'Space Grotesk',sans-serif; font-weight:600; }
+  .arrow { position:absolute; top:50%; transform:translateY(-50%); z-index:5; width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:rgba(15,22,27,0.7); border:1px solid var(--line); color:var(--text); cursor:pointer; border-radius:50%; font-size:1.2rem; transition:background 0.2s,border-color 0.2s; }
+  .arrow:hover { background:var(--panel-2); border-color:var(--flow); }
+  .arrow.prev { left:14px; } .arrow.next { right:14px; }
+  .dots { display:flex; gap:9px; justify-content:center; margin-top:18px; }
+  .dot { width:9px; height:9px; border-radius:50%; background:var(--line); border:none; cursor:pointer; padding:0; transition:background 0.2s,transform 0.2s; }
+  .dot.active { background:var(--flow); transform:scale(1.25); }
+
+  /* MATRIX */
+  .matrix { display:flex; flex-direction:column; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:4px; overflow:hidden; }
+  .row { display:grid; grid-template-columns:1fr auto; align-items:center; gap:16px; background:var(--panel); padding:18px 22px; }
+  .row .name { font-family:'Space Grotesk',sans-serif; font-weight:500; }
+  .row .name small { display:block; font-family:'Inter',sans-serif; font-weight:400; color:var(--muted); font-size:0.82rem; margin-top:2px; }
+  .status { font-family:'JetBrains Mono',monospace; font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; padding:5px 11px; border-radius:2px; white-space:nowrap; }
+  .status.finished { color:var(--green); border:1px solid var(--green); }
+  .status.printed  { color:var(--yellow); border:1px solid var(--yellow); }
+  .status.modeled  { color:var(--orange); border:1px solid var(--orange); }
+  .status.pending  { color:var(--gray); border:1px solid var(--gray); }
+
+  /* COMPONENT GRID */
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:4px; overflow:hidden; }
+  .card .media { aspect-ratio:4/3; position:relative; background:var(--panel-2); }
+  .card .media img { width:100%; height:100%; object-fit:cover; }
+  .card .body { padding:20px 22px; }
+  .card h3 { font-size:1.15rem; margin-bottom:6px; }
+  .card p { color:var(--muted); font-size:0.92rem; }
+
+  footer { padding:48px 0 64px; border-top:1px solid var(--line); color:var(--muted); font-size:0.9rem; margin-top:56px; }
+  footer a { color:var(--flow); text-decoration:none; }
+  footer a:hover { text-decoration:underline; }
+
+  @media (max-width:760px) {
+    .specs { grid-template-columns:1fr 1fr; }
+    .grid2 { grid-template-columns:1fr; }
+    nav .links { gap:14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-in">
+    <a class="brand" href="index.html">Wind Tunnel<span class="dot">.</span></a>
+    <div class="links">
+      <a href="index.html">Home</a>
+      <a href="build.html" class="active">Build progress</a>
+      <a href="design.html">Design notes</a>
+      <a href="results.html">Results</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEAD -->
+<header class="page-head">
+  <div class="wrap">
+    <span class="eyebrow">Status · Renders · Components</span>
+    <h1>Build progress</h1>
+    <p>Where every subsystem stands right now, the CAD behind it, and notes on the pieces furthest along.</p>
+  </div>
+</header>
+
+<!-- SPECS -->
+<section id="specs">
+  <div class="wrap">
+    <span class="eyebrow">Design Targets</span>
+    <h2 class="section-title">Specifications</h2>
+    <p class="section-sub">Key parameters driving the design.</p>
+    <div class="specs">
+      <!-- EDIT values -->
+      <div class="spec"><div class="val">5<span class="unit"> m/s</span></div><div class="key">Target Airspeed</div></div>
+      <div class="spec"><div class="val">9<span class="unit"> : 1</span></div><div class="key">Contraction Ratio</div></div>
+      <div class="spec"><div class="val">300<span class="unit"> mm</span></div><div class="key">Inlet Size</div></div>
+      <div class="spec"><div class="val">100<span class="unit"> mm</span></div><div class="key">Test Section Size</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CAROUSEL -->
+<section id="renders">
+  <div class="wrap">
+    <span class="eyebrow">CAD</span>
+    <h2 class="section-title">Design renders</h2>
+    <p class="section-sub">Use the arrows or arrow keys to cycle through the modeled assemblies.</p>
+    <div class="carousel" id="carousel">
+      <div class="frame">
+        <div class="slide active">
+          <div class="ph">missing image<span class="fname">images/render-contraction.png</span></div>
+          <img src="images/render-contraction.png" alt="Contraction chamber render" onerror="this.style.display='none'">
+          <div class="cap"><b>Contraction chamber</b> — accelerates and smooths the flow</div>
+        </div>
+        <div class="slide">
+          <div class="ph">missing image<span class="fname">images/render-settling.png</span></div>
+          <img src="images/render-settling.png" alt="Settling chamber render" onerror="this.style.display='none'">
+          <div class="cap"><b>Settling chamber</b> — houses the honeycomb straightener &amp; screens</div>
+        </div>
+        <div class="slide">
+          <div class="ph">missing image<span class="fname">images/render-smokerake.png</span></div>
+          <img src="images/render-smokerake.png" alt="Smoke rake render" onerror="this.style.display='none'">
+          <div class="cap"><b>Smoke rake</b> — injects parallel smoke lines for visualization</div>
+        </div>
+        <button class="arrow prev" onclick="move(-1)" aria-label="Previous render">‹</button>
+        <button class="arrow next" onclick="move(1)" aria-label="Next render">›</button>
+      </div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+</section>
+
+<!-- MATRIX -->
+<section id="log">
+  <div class="wrap">
+    <span class="eyebrow">Status</span>
+    <h2 class="section-title">Subsystem status</h2>
+    <p class="section-sub">Where each part of the tunnel stands. Update the badges as you go.</p>
+    <div class="matrix">
+      <!-- EDIT status class: finished / printed / modeled / pending -->
+      <div class="row"><div class="name">Honeycomb flow straightener<small>Glued, sanded, &amp; painted</small></div><span class="status finished">Finished</span></div>
+      <div class="row"><div class="name">Contraction chamber<small>Printed</small></div><span class="status printed">Printed</span></div>
+      <div class="row"><div class="name">Settling chamber<small>Fully modeled</small></div><span class="status modeled">Modeled</span></div>
+      <div class="row"><div class="name">Smoke rake<small>Fully modeled</small></div><span class="status modeled">Modeled</span></div>
+      <div class="row"><div class="name">Test section<small>Next up</small></div><span class="status pending">Not started</span></div>
+      <div class="row"><div class="name">Diffuser<small>Planned</small></div><span class="status pending">Not started</span></div>
+      <div class="row"><div class="name">Fan / drive section<small>Planned</small></div><span class="status pending">Not started</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPONENTS -->
+<section id="components">
+  <div class="wrap">
+    <span class="eyebrow">Detail</span>
+    <h2 class="section-title">Component notes</h2>
+    <p class="section-sub">Short write-ups on the pieces that are furthest along.</p>
+    <div class="grid2">
+      <div class="card">
+        <div class="media">
+          <div class="ph">missing image<span class="fname">images/honeycomb.jpg</span></div>
+          <img src="images/honeycomb.jpg" alt="Printed honeycomb" onerror="this.style.display='none'">
+        </div>
+        <div class="body">
+          <h3>Honeycomb straightener</h3>
+          <p>3D-printed in sections and glued together, then sanded and painted. Straightens incoming flow and knocks down large-scale swirl before the contraction.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="media">
+          <div class="ph">missing image<span class="fname">images/render-contraction.png</span></div>
+          <img src="images/render-contraction.png" alt="Contraction chamber" onerror="this.style.display='none'">
+        </div>
+        <div class="body">
+          <h3>Contraction chamber</h3>
+          <p>The contraction ratio sets how much the flow accelerates and how uniform the test-section velocity profile ends up. Profile chosen to avoid separation along the walls.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <p><strong>Wind Tunnel Build Log</strong> — by Aidan Sonntag ·
+      <a href="https://github.com/aidan27vt/Wind_Tunnel">GitHub</a> ·
+      <a href="#" onclick="event.preventDefault(); navigator.clipboard.writeText('aidan27@vt.edu'); this.textContent='Copied to clipboard!'; setTimeout(()=>this.textContent='aidan27@vt.edu', 1500);">aidan27@vt.edu</a>
+    </p>
+    <p style="margin-top:14px; font-size:0.8rem; color:var(--gray);">Active build — last updated <span id="today"></span></p>
+  </div>
+</footer>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dotsBox = document.getElementById('dots');
+  let idx = 0;
+  slides.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('aria-label', 'Go to render ' + (i + 1));
+    d.onclick = () => go(i);
+    dotsBox.appendChild(d);
+  });
+  const dots = document.querySelectorAll('.dot');
+  function go(n) {
+    slides[idx].classList.remove('active'); dots[idx].classList.remove('active');
+    idx = (n + slides.length) % slides.length;
+    slides[idx].classList.add('active'); dots[idx].classList.add('active');
+  }
+  function move(step) { go(idx + step); }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') move(-1);
+    if (e.key === 'ArrowRight') move(1);
+  });
+  document.getElementById('today').textContent =
+    new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long' });
+</script>
+</body>
+</html>

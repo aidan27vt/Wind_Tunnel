@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Subsonic Wind Tunnel — Build Log</title>
+
+<!--
+  ============================================================
+  HOME PAGE — index.html
+  ============================================================
+  This is a 4-page site. All pages go in the repo root together:
+     index.html    (this — Home)
+     build.html    (Build progress)
+     design.html   (Design notes / write-up)
+     results.html  (Results — coming soon)
+
+  Images go in an  images/  folder. Filenames the pages look for:
+     images/general-1.jpg ... general-4.jpg   (home gallery)
+     images/honeycomb.jpg
+     images/render-full.png, render-contraction.png,
+            render-settling.png, render-smokerake.png
+     images/flowviz.gif  (later, for Results)
+
+  Search for  EDIT  to find spots meant for your specifics.
+  ============================================================
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --ink:      #0F161B;
+    --panel:    #172128;
+    --panel-2:  #1D2A32;
+    --line:     #2A3B45;
+    --flow:     #4FD1E0;
+    --flow-dim: #2C8592;
+    --heat:     #E8A33D;
+    --text:     #DFE8EC;
+    --muted:    #8DA1AC;
+    --gray:     #6C7F8A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--ink); color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif; line-height: 1.6;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+  /* ===== NAV ===== */
+  nav { position: sticky; top: 0; z-index: 50; background: rgba(15,22,27,0.85); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  nav .nav-in { max-width: 1040px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+  nav .brand { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.95rem; color: var(--text); text-decoration: none; }
+  nav .brand .dot { color: var(--flow); }
+  nav .links { display: flex; gap: 20px; }
+  nav .links a { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; letter-spacing: 0.03em; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  nav .links a:hover, nav .links a.active { color: var(--flow); }
+
+  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--flow); }
+  h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; line-height: 1.12; }
+  section { padding: 84px 0; border-top: 1px solid var(--line); }
+  h2.section-title { font-size: clamp(1.7rem, 3.5vw, 2.4rem); margin: 10px 0 8px; }
+  p.section-sub { color: var(--muted); max-width: 620px; margin-bottom: 40px; }
+
+  /* ===== HERO ===== */
+  .hero { position: relative; min-height: 72vh; display: flex; align-items: center; overflow: hidden; }
+  .streamlines { position: absolute; inset: 0; z-index: 0; opacity: 0.5; }
+  .hero-content { position: relative; z-index: 2; }
+  .hero h1 { font-size: clamp(2.4rem, 6vw, 4.4rem); font-weight: 700; letter-spacing: -0.02em; margin: 14px 0 18px; }
+  .hero h1 .accent { color: var(--flow); }
+  .hero p.lede { max-width: 560px; font-size: 1.12rem; color: var(--muted); }
+  .hero .cta-row { margin-top: 30px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; letter-spacing: 0.04em; padding: 12px 20px; border: 1px solid var(--flow-dim); color: var(--text); text-decoration: none; border-radius: 2px; transition: background 0.2s, border-color 0.2s; }
+  .btn:hover { background: var(--panel-2); border-color: var(--flow); }
+  .btn.primary { background: var(--flow); color: var(--ink); border-color: var(--flow); font-weight: 500; }
+  .btn.primary:hover { background: #6fe0ee; }
+
+  /* ===== ABOUT ===== */
+  .about-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; align-items: start; }
+  .about-grid p { margin-bottom: 16px; color: #C9D6DC; }
+  .about-grid p strong { color: var(--text); }
+  .about-grid em { color: var(--flow); font-style: normal; }
+  .about-card { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 24px; }
+  .about-card .label { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--flow); margin-bottom: 14px; }
+  .about-card dl { display: grid; grid-template-columns: 1fr auto; gap: 10px 14px; }
+  .about-card dt { color: var(--muted); font-size: 0.9rem; }
+  .about-card dd { font-family: 'JetBrains Mono', monospace; color: var(--flow); text-align: right; font-size: 0.9rem; }
+
+  /* ===== GALLERY ===== */
+  .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .shot { position: relative; aspect-ratio: 4 / 3; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .shot img { width: 100%; height: 100%; object-fit: cover; }
+  .ph { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; text-align: center; padding: 8px; background: repeating-linear-gradient(-45deg, transparent 0 10px, rgba(79,209,224,0.04) 10px 20px), var(--panel); }
+  .ph .fname { color: var(--flow-dim); }
+
+  /* ===== EXPLORE CARDS ===== */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  a.xcard { display: block; text-decoration: none; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 26px 24px; transition: border-color 0.2s, transform 0.2s; }
+  a.xcard:hover { border-color: var(--flow); transform: translateY(-3px); }
+  a.xcard .n { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--flow-dim); letter-spacing: 0.1em; }
+  a.xcard h3 { font-size: 1.2rem; margin: 10px 0 8px; color: var(--text); }
+  a.xcard p { color: var(--muted); font-size: 0.9rem; }
+  a.xcard .go { display: inline-block; margin-top: 14px; color: var(--flow); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+
+  /* ===== FOOTER ===== */
+  footer { padding: 48px 0 64px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; }
+  footer a { color: var(--flow); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 760px) {
+    .about-grid { grid-template-columns: 1fr; }
+    .gallery { grid-template-columns: 1fr 1fr; }
+    .cards { grid-template-columns: 1fr; }
+    section { padding: 60px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .streamlines .line { animation: none !important; } html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <div class="nav-in">
+    <a class="brand" href="index.html">Wind Tunnel<span class="dot">.</span></a>
+    <div class="links">
+      <a href="index.html" class="active">Home</a>
+      <a href="build.html">Build progress</a>
+      <a href="design.html">Design notes</a>
+      <a href="results.html">Results</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<header class="hero">
+  <svg class="streamlines" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="fade" x1="0" x2="1">
+        <stop offset="0" stop-color="#4FD1E0" stop-opacity="0"/>
+        <stop offset="0.5" stop-color="#4FD1E0" stop-opacity="0.9"/>
+        <stop offset="1" stop-color="#4FD1E0" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <g stroke="url(#fade)" stroke-width="1.4" fill="none">
+      <path class="line" d="M-100,80  C 400,80  800,260 1300,300"/>
+      <path class="line" d="M-100,180 C 400,180 800,275 1300,300"/>
+      <path class="line" d="M-100,300 C 400,300 800,300 1300,300"/>
+      <path class="line" d="M-100,420 C 400,420 800,325 1300,300"/>
+      <path class="line" d="M-100,520 C 400,520 800,340 1300,300"/>
+    </g>
+  </svg>
+  <style>
+    .streamlines .line { stroke-dasharray: 14 220; animation: flow 3.4s linear infinite; }
+    .streamlines .line:nth-child(2) { animation-delay: 0.5s; }
+    .streamlines .line:nth-child(3) { animation-delay: 1.0s; }
+    .streamlines .line:nth-child(4) { animation-delay: 1.5s; }
+    .streamlines .line:nth-child(5) { animation-delay: 2.0s; }
+    @keyframes flow { to { stroke-dashoffset: -234; } }
+  </style>
+  <div class="wrap hero-content">
+    <span class="eyebrow">Open-Circuit Suction · Subsonic · Smoke Visualization</span>
+    <h1>Designing &amp; building a<br><span class="accent">subsonic wind tunnel</span><br>from scratch</h1>
+    <p class="lede">A personal open-circuit suction wind tunnel with a smoke rake for flow visualization — every component designed in SOLIDWORKS and 3D printed. A live build log, updated as the build progresses.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="build.html">See the build</a>
+      <a class="btn" href="https://github.com/aidan27vt/Wind_Tunnel" target="_blank" rel="noopener">Source on GitHub</a>
+    </div>
+  </div>
+</header>
+
+<!-- ===== ABOUT ===== -->
+<section id="about">
+  <div class="wrap">
+    <span class="eyebrow">About</span>
+    <h2 class="section-title">The project</h2>
+    <div class="about-grid">
+      <div>
+        <!-- EDIT: adjust to your own voice / background -->
+        <p>This is a from-scratch build of a small <strong>open-circuit suction wind tunnel</strong> — a benchtop-scale rig for visualizing airflow over models using discrete smoke lines. The goal is a tunnel with clean enough flow that the smoke stays crisp through the test section, so aerodynamic behavior is actually legible rather than a blur.</p>
+        <p>Every part is modeled in <strong>SOLIDWORKS</strong> and fabricated on a 3D printer, section by section. I'm documenting the whole thing as a live build log: what's designed, what's printed, and the reasoning behind the design choices along the way.</p>
+        <!-- EDIT: a sentence or two about you — year, major, school, what drew you to this -->
+        <p>I'm a student building this on my own to go deeper on applied aerodynamics and fabrication than coursework alone allows. <em>Replace this line with a bit about yourself.</em></p>
+      </div>
+      <div class="about-card">
+        <div class="label">At a glance</div>
+        <dl>
+          <!-- EDIT values -->
+          <dt>Type</dt><dd>Open-circuit</dd>
+          <dt>Drive</dt><dd>Suction</dd>
+          <dt>Target speed</dt><dd>5 m/s</dd>
+          <dt>Contraction</dt><dd>9 : 1</dd>
+          <dt>Test section</dt><dd>100 mm</dd>
+          <dt>CAD</dt><dd>SOLIDWORKS</dd>
+          <dt>Fabrication</dt><dd>FDM print</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== GALLERY ===== -->
+<section id="gallery">
+  <div class="wrap">
+    <span class="eyebrow">Gallery</span>
+    <h2 class="section-title">The build so far</h2>
+    <p class="section-sub">A few shots of the project — renders and printed parts. Drop images into the <code>images/</code> folder to fill these in.</p>
+    <div class="gallery">
+      <div class="shot"><div class="ph">missing image<span class="fname">images/render-full.png</span></div><img src="images/render-full.png" alt="Full assembly render" onerror="this.style.display='none'"></div>
+      <div class="shot"><div class="ph">missing image<span class="fname">images/honeycomb.jpg</span></div><img src="images/honeycomb.jpg" alt="Printed honeycomb" onerror="this.style.display='none'"></div>
+      <div class="shot"><div class="ph">missing image<span class="fname">images/general-1.jpg</span></div><img src="images/general-1.jpg" alt="Build photo" onerror="this.style.display='none'"></div>
+      <div class="shot"><div class="ph">missing image<span class="fname">images/general-2.jpg</span></div><img src="images/general-2.jpg" alt="Build photo" onerror="this.style.display='none'"></div>
+      <div class="shot"><div class="ph">missing image<span class="fname">images/general-3.jpg</span></div><img src="images/general-3.jpg" alt="Build photo" onerror="this.style.display='none'"></div>
+      <div class="shot"><div class="ph">missing image<span class="fname">images/general-4.jpg</span></div><img src="images/general-4.jpg" alt="Build photo" onerror="this.style.display='none'"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== EXPLORE ===== -->
+<section id="explore">
+  <div class="wrap">
+    <span class="eyebrow">Explore</span>
+    <h2 class="section-title">Dig in</h2>
+    <p class="section-sub">Three ways into the project.</p>
+    <div class="cards">
+      <a class="xcard" href="build.html">
+        <div class="n">01</div>
+        <h3>Build progress</h3>
+        <p>Component-by-component status, CAD renders, and where each subsystem stands right now.</p>
+        <span class="go">View build →</span>
+      </a>
+      <a class="xcard" href="design.html">
+        <div class="n">02</div>
+        <h3>Design notes</h3>
+        <p>The engineering rationale — configuration, sizing, flow conditioning, and the tradeoffs behind each choice.</p>
+        <span class="go">Read write-up →</span>
+      </a>
+      <a class="xcard" href="results.html">
+        <div class="n">03</div>
+        <h3>Results</h3>
+        <p>Flow-visualization footage and measurements — coming once the tunnel runs.</p>
+        <span class="go">Coming soon →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap">
+    <p><strong>Wind Tunnel Build Log</strong> — by Aidan Sonntag ·
+      <a href="https://github.com/aidan27vt/Wind_Tunnel">GitHub</a> ·
+      <a href="#" onclick="event.preventDefault(); navigator.clipboard.writeText('aidan27@vt.edu'); this.textContent='Copied to clipboard!'; setTimeout(()=>this.textContent='aidan27@vt.edu', 1500);">aidan27@vt.edu</a>
+    </p>
+    <p style="margin-top:14px; font-size:0.8rem; color:var(--gray);">Active build — last updated <span id="today"></span></p>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('today').textContent =
+    new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long' });
+</script>
+</body>
+</html>

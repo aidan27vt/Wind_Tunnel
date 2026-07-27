@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Results — Subsonic Wind Tunnel</title>
+
+<!--
+  ============================================================
+  RESULTS PAGE — results.html  (placeholder for now)
+  ============================================================
+  Once the tunnel runs, replace the "coming soon" block with real
+  content: drop images/flowviz.gif into the frame, add measurement
+  charts, etc. The planned-results list gives visitors a roadmap
+  in the meantime. Search for  EDIT  when you're ready to fill it in.
+  ============================================================
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --ink:#0F161B; --panel:#172128; --panel-2:#1D2A32; --line:#2A3B45;
+    --flow:#4FD1E0; --flow-dim:#2C8592; --heat:#E8A33D;
+    --text:#DFE8EC; --muted:#8DA1AC; --gray:#6C7F8A;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--ink); color:var(--text); font-family:'Inter',system-ui,sans-serif; line-height:1.6; -webkit-font-smoothing:antialiased; min-height:100vh; display:flex; flex-direction:column; }
+  .wrap { max-width:1040px; margin:0 auto; padding:0 24px; width:100%; }
+
+  /* NAV */
+  nav { position:sticky; top:0; z-index:50; background:rgba(15,22,27,0.85); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); }
+  nav .nav-in { max-width:1040px; margin:0 auto; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; }
+  nav .brand { font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:0.95rem; color:var(--text); text-decoration:none; }
+  nav .brand .dot { color:var(--flow); }
+  nav .links { display:flex; gap:20px; }
+  nav .links a { font-family:'JetBrains Mono',monospace; font-size:0.78rem; letter-spacing:0.03em; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+  nav .links a:hover, nav .links a.active { color:var(--flow); }
+
+  .eyebrow { font-family:'JetBrains Mono',monospace; font-size:0.72rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--flow); }
+  h1,h2,h3 { font-family:'Space Grotesk',sans-serif; font-weight:600; line-height:1.12; }
+
+  main { flex:1; }
+  .head { padding:72px 0 20px; }
+  .head h1 { font-size:clamp(2rem,5vw,3.2rem); letter-spacing:-0.02em; margin:14px 0 14px; }
+  .head p { color:var(--muted); max-width:600px; font-size:1.08rem; }
+
+  /* coming-soon frame */
+  .soon-frame { position:relative; aspect-ratio:16/9; background:var(--panel); border:1px solid var(--line); border-radius:6px; overflow:hidden; margin:40px 0 20px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; background-image:repeating-linear-gradient(-45deg,transparent 0 12px,rgba(79,209,224,0.035) 12px 24px); }
+  .soon-frame img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .soon-tag { font-family:'JetBrains Mono',monospace; font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--flow); }
+  .soon-frame h2 { font-size:clamp(1.6rem,4vw,2.4rem); margin:14px 0 10px; }
+  .soon-frame p { color:var(--muted); max-width:440px; font-size:0.98rem; }
+  .pulse { width:9px; height:9px; border-radius:50%; background:var(--flow); display:inline-block; margin-right:8px; animation:pulse 1.8s ease-in-out infinite; vertical-align:middle; }
+  @keyframes pulse { 0%,100%{opacity:0.35;} 50%{opacity:1;} }
+
+  /* planned list */
+  .planned { padding:20px 0 84px; }
+  .planned h3 { font-size:1.2rem; margin-bottom:6px; }
+  .planned .sub { color:var(--muted); font-size:0.92rem; margin-bottom:26px; }
+  .plist { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .pitem { background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:20px 22px; }
+  .pitem .n { font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--flow-dim); letter-spacing:0.1em; }
+  .pitem h4 { font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.05rem; margin:8px 0 6px; }
+  .pitem p { color:var(--muted); font-size:0.9rem; }
+
+  footer { padding:40px 0 56px; border-top:1px solid var(--line); color:var(--muted); font-size:0.9rem; }
+  footer a { color:var(--flow); text-decoration:none; }
+  footer a:hover { text-decoration:underline; }
+
+  @media (max-width:640px) { .plist { grid-template-columns:1fr; } nav .links { gap:14px; } }
+  @media (prefers-reduced-motion: reduce) { .pulse { animation:none; } }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-in">
+    <a class="brand" href="index.html">Wind Tunnel<span class="dot">.</span></a>
+    <div class="links">
+      <a href="index.html">Home</a>
+      <a href="build.html">Build progress</a>
+      <a href="design.html">Design notes</a>
+      <a href="results.html" class="active">Results</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <header class="head">
+    <div class="wrap">
+      <span class="eyebrow">Testing Phase</span>
+      <h1>Results</h1>
+      <p>Once the tunnel is assembled and running, flow-visualization footage and measurements will live here.</p>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <!-- When ready: drop images/flowviz.gif in and it fills this frame automatically -->
+    <div class="soon-frame">
+      <img src="images/flowviz.gif" alt="Flow visualization" onerror="this.style.display='none'">
+      <div class="soon-tag"><span class="pulse"></span>Coming soon</div>
+      <h2>Awaiting first run</h2>
+      <p>The tunnel is still under construction. Check the build progress page for the latest status.</p>
+    </div>
+  </div>
+
+  <section class="planned">
+    <div class="wrap">
+      <h3>What's planned</h3>
+      <p class="sub">The results this page will eventually hold.</p>
+      <!-- EDIT: adjust these to whatever you actually plan to capture -->
+      <div class="plist">
+        <div class="pitem">
+          <div class="n">01</div>
+          <h4>Smoke-line visualization</h4>
+          <p>Video of parallel smoke streaklines flowing over test models, showing attachment, separation, and wake behavior.</p>
+        </div>
+        <div class="pitem">
+          <div class="n">02</div>
+          <h4>Velocity profile</h4>
+          <p>Measured flow uniformity across the test section to confirm the conditioning stack is doing its job.</p>
+        </div>
+        <div class="pitem">
+          <div class="n">03</div>
+          <h4>Turbulence check</h4>
+          <p>An assessment of how crisp the smoke lines stay — the practical measure of test-section flow quality.</p>
+        </div>
+        <div class="pitem">
+          <div class="n">04</div>
+          <h4>Model comparisons</h4>
+          <p>Side-by-side visualization of different shapes — airfoils, bluff bodies — at the tunnel's operating speed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Wind Tunnel Build Log</strong> — by Aidan Sonntag ·
+      <a href="index.html">Home</a> ·
+      <a href="https://github.com/aidan27vt/Wind_Tunnel">GitHub</a> ·
+      <a href="#" onclick="event.preventDefault(); navigator.clipboard.writeText('aidan27@vt.edu'); this.textContent='Copied to clipboard!'; setTimeout(()=>this.textContent='aidan27@vt.edu', 1500);">aidan27@vt.edu</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
