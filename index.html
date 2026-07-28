@@ -5,27 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Subsonic Wind Tunnel — Build Log</title>
 
-<!--
-  ============================================================
-  HOME PAGE — index.html
-  ============================================================
-  This is a 4-page site. All pages go in the repo root together:
-     index.html    (this — Home)
-     build.html    (Build progress)
-     design.html   (Design notes / write-up)
-     results.html  (Results — coming soon)
-
-  Images go in an  images/  folder. Filenames the pages look for:
-     images/general-1.jpg ... general-4.jpg   (home gallery)
-     images/honeycomb.jpg
-     images/render-full.png, render-contraction.png,
-            render-settling.png, render-smokerake.png
-     images/flowviz.gif  (later, for Results)
-
-  Search for  EDIT  to find spots meant for your specifics.
-  ============================================================
--->
-
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -126,7 +105,7 @@
 <!-- ===== NAV ===== -->
 <nav>
   <div class="nav-in">
-    <a class="brand" href="index.html">Wind Tunnel<span class="dot">.</span></a>
+    <a class="brand" href="index.html">Wind Tunnel</a>
     <div class="links">
       <a href="index.html" class="active">Home</a>
       <a href="build.html">Build progress</a>
@@ -163,9 +142,9 @@
     @keyframes flow { to { stroke-dashoffset: -234; } }
   </style>
   <div class="wrap hero-content">
-    <span class="eyebrow">Open-Circuit Suction · Subsonic · Smoke Visualization</span>
-    <h1>Designing &amp; building a<br><span class="accent">subsonic wind tunnel</span><br>from scratch</h1>
-    <p class="lede">A personal open-circuit suction wind tunnel with a smoke rake for flow visualization — every component designed in SOLIDWORKS and 3D printed. A live build log, updated as the build progresses.</p>
+    <span class="eyebrow">Open-Circuit Suction | Subsonic | Smoke Visualization</span>
+    <h1>Designing &amp; building a<br><span class="accent">subsonic wind tunnel</span><br>alone, from scratch</h1>
+    <p class="lede">A personal open-circuit suction wind tunnel with a smoke rake for flow visualization.Components modeled in SOLIDWORKS and fabricated via 3D printed. This is a live build log so stay tuned...</p>
     <div class="cta-row">
       <a class="btn primary" href="build.html">See the build</a>
       <a class="btn" href="https://github.com/aidan27vt/Wind_Tunnel" target="_blank" rel="noopener">Source on GitHub</a>
@@ -180,23 +159,22 @@
     <h2 class="section-title">The project</h2>
     <div class="about-grid">
       <div>
-        <!-- EDIT: adjust to your own voice / background -->
-        <p>This is a from-scratch build of a small <strong>open-circuit suction wind tunnel</strong> — a benchtop-scale rig for visualizing airflow over models using discrete smoke lines. The goal is a tunnel with clean enough flow that the smoke stays crisp through the test section, so aerodynamic behavior is actually legible rather than a blur.</p>
+        <p>This is a solo, DIY build of a small <strong>open-circuit suction wind tunnel</strong>. A roughly meter long rig for visualizing airflow over models using discrete smoke lines. The goal is a tunnel with clean enough flow that the smoke stays in crisp lines through the test section, so aerodynamic behavior is actually legible rather than a blur.</p>
         <p>Every part is modeled in <strong>SOLIDWORKS</strong> and fabricated on a 3D printer, section by section. I'm documenting the whole thing as a live build log: what's designed, what's printed, and the reasoning behind the design choices along the way.</p>
         <!-- EDIT: a sentence or two about you — year, major, school, what drew you to this -->
-        <p>I'm a student building this on my own to go deeper on applied aerodynamics and fabrication than coursework alone allows. <em>Replace this line with a bit about yourself.</em></p>
+        <p>I'm a student at Virginia Tech building this on my own over the summer to apply what I've been learning in the classroom to a real self-driven project.</p>
       </div>
       <div class="about-card">
         <div class="label">At a glance</div>
         <dl>
-          <!-- EDIT values -->
           <dt>Type</dt><dd>Open-circuit</dd>
           <dt>Drive</dt><dd>Suction</dd>
           <dt>Target speed</dt><dd>5 m/s</dd>
           <dt>Contraction</dt><dd>9 : 1</dd>
           <dt>Test section</dt><dd>100 mm</dd>
           <dt>CAD</dt><dd>SOLIDWORKS</dd>
-          <dt>Fabrication</dt><dd>FDM print</dd>
+          <dt>Fabrication</dt><dd>FDM 3D print</dd>
+          <dt>Material</dt><dd>PLA+ Plastic</dd>
         </dl>
       </div>
     </div>
@@ -208,7 +186,7 @@
   <div class="wrap">
     <span class="eyebrow">Gallery</span>
     <h2 class="section-title">The build so far</h2>
-    <p class="section-sub">A few shots of the project — renders and printed parts. Drop images into the <code>images/</code> folder to fill these in.</p>
+    <p class="section-sub">A few snapshots of renders, printed parts, & finished pieces.
     <div class="gallery">
       <div class="shot"><div class="ph">missing image<span class="fname">images/render-full.png</span></div><img src="images/render-full.png" alt="Full assembly render" onerror="this.style.display='none'"></div>
       <div class="shot"><div class="ph">missing image<span class="fname">images/honeycomb.jpg</span></div><img src="images/honeycomb.jpg" alt="Printed honeycomb" onerror="this.style.display='none'"></div>
@@ -236,13 +214,13 @@
       <a class="xcard" href="design.html">
         <div class="n">02</div>
         <h3>Design notes</h3>
-        <p>The engineering rationale — configuration, sizing, flow conditioning, and the tradeoffs behind each choice.</p>
+        <p>The engineering thinking behind the project. Configuration, sizing, flow conditioning, and the reasoning behind each choice.</p>
         <span class="go">Read write-up →</span>
       </a>
       <a class="xcard" href="results.html">
         <div class="n">03</div>
         <h3>Results</h3>
-        <p>Flow-visualization footage and measurements — coming once the tunnel runs.</p>
+        <p>Flow-visualization footage and data. Available upon completion & testing.</p>
         <span class="go">Coming soon →</span>
       </a>
     </div>
@@ -252,8 +230,8 @@
 <!-- ===== FOOTER ===== -->
 <footer>
   <div class="wrap">
-    <p><strong>Wind Tunnel Build Log</strong> — by Aidan Sonntag ·
-      <a href="https://github.com/aidan27vt/Wind_Tunnel">GitHub</a> ·
+    <p><strong>Wind Tunnel Build Log</strong> — by Aidan Sonntag |
+      <a href="https://github.com/aidan27vt/Wind_Tunnel">GitHub</a> |
       <a href="#" onclick="event.preventDefault(); navigator.clipboard.writeText('aidan27@vt.edu'); this.textContent='Copied to clipboard!'; setTimeout(()=>this.textContent='aidan27@vt.edu', 1500);">aidan27@vt.edu</a>
     </p>
     <p style="margin-top:14px; font-size:0.8rem; color:var(--gray);">Active build — last updated <span id="today"></span></p>
