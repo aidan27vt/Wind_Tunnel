@@ -207,6 +207,15 @@
     </p>
   </div>
 </footer>
-
+<script>
+  document.querySelectorAll('img').forEach(img => {
+    const hide = () => {
+      const ph = img.parentElement.querySelector('.ph');
+      if (ph) ph.style.display = 'none';
+    };
+    if (img.complete && img.naturalWidth > 0) hide();
+    else img.addEventListener('load', hide);
+  });
+</script>
 </body>
 </html>
